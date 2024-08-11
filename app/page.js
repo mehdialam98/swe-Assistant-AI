@@ -13,14 +13,19 @@ import {
   Paper,
   IconButton,
   AppBar,
+  Avatar,
   Toolbar
 } from "@mui/material";
+import { Google } from '@mui/icons-material';
+import { auth, provider, signInWithPopup } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 
 const sidebarWidth = 260;
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [user, setUser] = useState(null);
   const [chatHistory] = useState([
     "Data Structures and Algorithms",
     "Java Programming Basics",
@@ -48,6 +53,25 @@ export default function Home() {
     "Java vs. JavaScript",
     "Activities to make friends in new city",
   ];
+
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);  // Set the signed-in user
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setMessages([]);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const sendMessage = useCallback(async () => {
     if (!message.trim()) return;
@@ -117,10 +141,25 @@ export default function Home() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <AppBar position="static" sx={{ bgcolor: '#f5f5f5' }}>
-        <Toolbar sx={{ justifyContent: 'flex-end' }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" component="div" sx={{ color: 'text.primary' }}>
             AI Powered Assistant
           </Typography>
+          <IconButton
+            color="inherit"
+            sx={{ ml: 2 }}
+            onClick={user ? handleSignOut : signInWithGoogle}  // Direct redirect on click
+          >
+            <Avatar
+              sx={{
+                bgcolor: '#f5f5f5',
+                color: '#1976d2',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+              }}
+            >
+              {user ? <Avatar src={user.photoURL} /> : <Google />}
+            </Avatar>
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Box sx={{ display: 'flex', flexGrow: 1, bgcolor: '#f5f5f5' }}>
