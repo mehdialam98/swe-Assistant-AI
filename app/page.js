@@ -149,8 +149,38 @@ export default function Home() {
   }, [message, messages]);
 
   const submitFeedback = async () => {
-    // Remove all feedback-related code
-    // This function can be removed entirely if feedback is no longer needed
+    if (!feedbackRating) {
+      alert('Please select a rating before submitting.');
+      return;
+    }
+
+    const feedback = {
+      rating: feedbackRating,
+      comment: feedbackComment,
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(feedback),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+
+      alert('Feedback submitted successfully!');
+      setOpenModal(false);
+      setFeedbackRating(null);
+      setFeedbackComment('');
+    } catch (error) {
+      console.error('Error saving feedback:', error);
+      alert('Failed to submit feedback. Please try again.');
+    }
   };
 
   const handleCloseModal = () => {
