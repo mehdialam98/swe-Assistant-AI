@@ -379,9 +379,9 @@ export default function Home() {
         </Box>
       </Box>
       <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Rate the Assistant</DialogTitle>
+        <DialogTitle>Rate Our Assistant</DialogTitle>
         <DialogContent>
-          <Typography>What do you think about the assistant?</Typography>
+          <Typography>How Satisfied Were You With Your Assistance?</Typography>
           <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
             {[1, 2, 3, 4, 5].map((rating) => (
               <Button
