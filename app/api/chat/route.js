@@ -34,7 +34,6 @@ if (!process.env.OPENAI_API_KEY) {
     console.error("OPENAI_API_KEY is not set in the environment variables");
   }
 
-
   const openai = new OpenAI({
       organization: "org-7LRwAlQ1LVIrIYrsmMHzUp0x",
       project: "proj_SFYWJCvMiLiz7Lxr29fr7ODb",
@@ -54,7 +53,7 @@ export async function POST(req) {
                 },
                 ...data.messages,
             ],
-            model: 'gpt-4o-mini', // or 'gpt-4' if you have access
+            model: 'gpt-4o-mini',
             stream: true,
         });
 

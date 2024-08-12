@@ -6,6 +6,10 @@ import {
   TextField,
   Button,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Drawer,
   List,
   ListItem,
@@ -17,6 +21,7 @@ import {
   Toolbar
 } from "@mui/material";
 import { Google } from '@mui/icons-material';
+import { Star } from '@mui/icons-material';
 import { auth, provider, signInWithPopup } from '../lib/firebase';
 import { signOut } from 'firebase/auth';
 
@@ -26,7 +31,10 @@ export default function Home() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [user, setUser] = useState(null);
-  const [chatHistory] = useState([
+  const [feedbackRating, setFeedbackRating] = useState(null); // New state for feedback rating
+  const [feedbackComment, setFeedbackComment] = useState(''); // New state for feedback comment
+
+  const chatHistory = [
     "Data Structures and Algorithms",
     "Java Programming Basics",
     "Object-Oriented Programming Concepts",
@@ -45,7 +53,7 @@ export default function Home() {
     "Big Data Analytics",
     "Artificial Intelligence in Software",
     "DevOps and Continuous Integration",
-  ]);
+  ];
 
   const suggestedPrompts = [
     "How to create a website",
@@ -53,6 +61,8 @@ export default function Home() {
     "Java vs. JavaScript",
     "Activities to make friends in new city",
   ];
+
+  const [openModal, setOpenModal] = useState(false);
 
   const signInWithGoogle = async () => {
     try {
@@ -138,6 +148,15 @@ export default function Home() {
     }
   }, [message, messages]);
 
+  const submitFeedback = async () => {
+    // Remove all feedback-related code
+    // This function can be removed entirely if feedback is no longer needed
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <AppBar position="static" sx={{ bgcolor: '#f5f5f5' }}>
@@ -145,21 +164,38 @@ export default function Home() {
           <Typography variant="h6" component="div" sx={{ color: 'text.primary' }}>
             AI Powered Assistant
           </Typography>
-          <IconButton
-            color="inherit"
-            sx={{ ml: 2 }}
-            onClick={user ? handleSignOut : signInWithGoogle}  // Direct redirect on click
-          >
-            <Avatar
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton
+              color="inherit"
+              sx={{ ml: 2 }}
+              onClick={user ? handleSignOut : signInWithGoogle}
+            >
+              <Avatar
+                sx={{
+                  bgcolor: '#f5f5f5',
+                  color: '#1976d2',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                {user ? <Avatar src={user.photoURL} /> : <Google />}
+              </Avatar>
+            </IconButton>
+            <IconButton
+              color="primary"
               sx={{
-                bgcolor: '#f5f5f5',
-                color: '#1976d2',
+                ml: 2,
+                bgcolor: '#1976d2',
+                '&:hover': {
+                  bgcolor: '#1565c0',
+                },
+                borderRadius: '50%',
                 boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
               }}
+              onClick={() => setOpenModal(true)}
             >
-              {user ? <Avatar src={user.photoURL} /> : <Google />}
-            </Avatar>
-          </IconButton>
+              <Star sx={{ color: '#FFD700' }} />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
       <Box sx={{ display: 'flex', flexGrow: 1, bgcolor: '#f5f5f5' }}>
@@ -262,6 +298,39 @@ export default function Home() {
           </Box>
         </Box>
       </Box>
+      <Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle>Rate the Assistant</DialogTitle>
+        <DialogContent>
+          <Typography>What do you think about the assistant?</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+            {[1, 2, 3, 4, 5].map((rating) => (
+              <Button
+                key={rating}
+                variant={feedbackRating === rating ? 'contained' : 'outlined'}
+                onClick={() => setFeedbackRating(rating)}
+              >
+                {rating}
+              </Button>
+            ))}
+          </Stack>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Additional comments..."
+            value={feedbackComment}
+            onChange={(e) => setFeedbackComment(e.target.value)}
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={submitFeedback} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
